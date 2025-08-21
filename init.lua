@@ -281,6 +281,9 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  -- Import custom plugins from lua/custom/plugins/*.lua
+  { import = 'custom.plugins' },
+
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   -- 'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
@@ -384,47 +387,6 @@ require('lazy').setup({
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
-  },
-
-  { -- File bookmarking and quick navigation
-    'ThePrimeagen/harpoon',
-    branch = 'harpoon2',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    lazy = false,
-    config = function()
-      local harpoon = require 'harpoon'
-      harpoon:setup()
-
-      -- 키맵 설정
-      vim.keymap.set('n', '<leader>a', function()
-        harpoon:list():add()
-      end, { desc = 'Harpoon [A]dd file' })
-      vim.keymap.set('n', '<C-e>', function()
-        harpoon.ui:toggle_quick_menu(harpoon:list())
-      end, { desc = 'Harpoon menu' })
-
-      -- 파일 간 빠른 이동
-      vim.keymap.set('n', '<leader>h', function()
-        harpoon:list():select(1)
-      end, { desc = 'Harpoon file 1' })
-      vim.keymap.set('n', '<leader>t', function()
-        harpoon:list():select(2)
-      end, { desc = 'Harpoon file 2' })
-      vim.keymap.set('n', '<leader>n', function()
-        harpoon:list():select(3)
-      end, { desc = 'Harpoon file 3' })
-      vim.keymap.set('n', '<leader>s', function()
-        harpoon:list():select(4)
-      end, { desc = 'Harpoon file 4' })
-
-      -- 다음/이전 북마크로 이동
-      vim.keymap.set('n', '<C-S-P>', function()
-        harpoon:list():prev()
-      end, { desc = 'Harpoon previous' })
-      vim.keymap.set('n', '<C-S-N>', function()
-        harpoon:list():next()
-      end, { desc = 'Harpoon next' })
-    end,
   },
 
   -- NOTE: Plugins can specify dependencies.
@@ -618,6 +580,7 @@ require('lazy').setup({
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('<leader>ca', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+
           map('K', vim.lsp.buf.hover, 'Hover Documentation')
 
           -- Find references for the word under your cursor.
@@ -737,6 +700,8 @@ require('lazy').setup({
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
+      capabilities.workspace = capabilities.workspace or {}
+      capabilities.workspace.applyEdit = true
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -758,7 +723,13 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
+        ts_ls = {
+          -- Disable formatting to avoid conflicts with external formatters
+          on_attach = function(client, _)
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end,
+        },
         --
 
         lua_ls = {
@@ -794,6 +765,8 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'kotlin_lsp',
+        'typescript-language-server',
+        'eslint_d',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -1079,11 +1052,8 @@ require('lazy').setup({
   vim.keymap.set('n', '<leader>E', ':Neotree reveal<CR>', { desc = '[E]xplorer Reveal Current' }),
   vim.keymap.set('n', '<leader>ef', ':Neotree focus<CR>', { desc = '[E]xplorer [F]ocus' }),
 
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
+  -- NOTE: Custom plugins are imported at the top of this file from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!

@@ -7,7 +7,20 @@ return {
       local lint = require 'lint'
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
+        javascript = {},
+        javascriptreact = {},
+        typescript = {},
+        typescriptreact = {},
       }
+
+      -- Prefer eslint_d if available, otherwise fallback to eslint
+      local eslint_cmd = (vim.fn.executable('eslint_d') == 1) and 'eslint_d' or ((vim.fn.executable('eslint') == 1) and 'eslint' or nil)
+      if eslint_cmd then
+        lint.linters_by_ft.javascript = { eslint_cmd }
+        lint.linters_by_ft.javascriptreact = { eslint_cmd }
+        lint.linters_by_ft.typescript = { eslint_cmd }
+        lint.linters_by_ft.typescriptreact = { eslint_cmd }
+      end
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
       -- instead set linters_by_ft like this:
