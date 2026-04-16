@@ -764,7 +764,6 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
-        'kotlin_lsp',
         'typescript-language-server',
         'eslint_d',
       })
@@ -812,7 +811,7 @@ require('lazy').setup({
           return nil
         else
           return {
-            timeout_ms = 2000, -- kotlin takes long to lint
+            timeout_ms = 2000,
             lsp_format = 'fallback',
           }
         end
@@ -824,7 +823,6 @@ require('lazy').setup({
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
-        kotlin = { 'ktlint' },
         markdown = { 'prettier' },
       },
     },
