@@ -65,8 +65,6 @@ map('n', '<leader>qp', '<cmd>cprev<CR>zz', { desc = 'Quickfix prev' })
 map('n', '<leader>ln', '<cmd>lnext<CR>zz', { desc = 'Loclist next' })
 map('n', '<leader>lp', '<cmd>lprev<CR>zz', { desc = 'Loclist prev' })
 
-map('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer<CR>')
-
 -- [[ Autocmds ]]
 vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
